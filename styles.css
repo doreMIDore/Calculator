@@ -1,0 +1,91 @@
+#left-container{
+    display: flex;
+    max-width: 220px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    float: left;
+}
+
+#left-container button:nth-child(10){
+width: 135px;
+}
+
+#right-container{
+    display: flex;
+    max-width: 132px;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+#container-symbol{
+    display: inline;
+    position: relative;
+}
+
+
+#left-container *::selection {
+    background-color: none;
+    cursor: default;
+}
+
+#left-container button{
+    width: 60px;
+    height: 60px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    background-color: transparent;
+    font-size: 25px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#right-container button:last-child{
+    width: 118px;
+    height: 50px;
+}
+
+#right-container button{
+    width: 50px;
+    height: 100px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    background-color: transparent;
+    font-size: 25px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#elements button span {
+    transition: transform 0.01s;
+    display: block;
+}
+#elements button:hover {
+    background-color: #BBB;
+}
+
+#elements button:active span {
+    transform: scale(0.8);
+}
+
+#left-container>div{
+    margin: 10px;
+    margin-bottom: 20px;
+}
+
+
+#result-block{
+    margin: 20px;
+    margin-top: 90px;
+
+    display: inline;
+}
+#elements{
+    display: flex;
+    float: left;
+}
+
+output{
+ font-size: xx-large;
+}
+
+h1{
+    color: #666;
+}
