@@ -1,230 +1,144 @@
 const selectorLeftContainer = document.querySelector("#left-container");
 const resultEl = document.querySelector("output");
 const selectorRightContainer = document.querySelector("#right-container");
-const arrayButtons = []
-
+const arrayButtons = [];
 
 const leftContainer = Array.from(Array(10).keys());
 leftContainer.push(0);
-leftContainer.push("C")
+leftContainer.push("C");
 leftContainer.shift();
 
-const symbols = ["*", "/", "-", "+", "="]
-
-const deleteSymbol = "C"
-
+const symbols = ["*", "/", "-", "+", "="];
 
 class Result {
     constructor() {
         this.result = '';
     }
 
-    result = '';
-
     setResult(newResult) {
-        this.result = newResult;
+        this.result += newResult;
         resultEl.textContent += newResult;
+    }
+    
+    reset() {
+        this.result = '';
+        resultEl.textContent = this.result;
+        operandA = null;
+        operandB = null;
+        currentOperator = null;
+        isNegativeAllowed = true;
     }
 }
 
-class Button{
-
-    constructor(){
+class Button {
+    constructor() {
         this.name = ""
     }
 
-    addingButton(dataArray, destinationArray){
+    addingButton(dataArray, destinationContainer) {
+        const buttonArray = [];
         dataArray.forEach((input) => {
             const newButton = document.createElement('button');
-            const span = document.createElement('span');
-            span.textContent = input.toString();
-            newButton.append(span);
-            destinationArray.append(newButton)
-            arrayButtons.push(newButton)
-            }
-        )
-        return arrayButtons
-    };
+            newButton.textContent = input.toString();
+            destinationContainer.append(newButton);
+            buttonArray.push(newButton);
+            arrayButtons.push(newButton);
+        });
+        return buttonArray;
+    }
 
-    actionOnButton(buttons){
-        this.name.forEach((input) => {
-                    input.onclick = () => {
-                        switch (input.toString()) {
-                            case '*':
-                                console.log('Умножить');
-                                a=b
-                                d = "";
-                                output.setResult(input)
-                                console.log(b);
-                                break;
-                
-                            case '/':
-                                console.log('Разделить');
-                                output.setResult(input)
-                                break;
-                
-                            case '-':
-                                console.log('Вычесть');
-                                output.setResult(input)
-                                break;
-                            
-                
-                            case '+':
-                                console.log('Сложить');
-                                output.setResult(input)
-                                break;
-                                   
-                            case '=':
-                                console.log('Равно');
-                                output.setResult(input)
-                                output.setResult(a*d)
-                                console.log(a);
-                                console.log(d);
-                                console.log(Number(a)*Number(d));
-                
-                                break;
-                            
-                            default:
-                                console.log(input)
-                                output.setResult(input)
-                                if (d==="") {
-                                    d += input.toString()
-                                }
-                                b += input.toString()
-                                break;
-                        }
-                    }
-        })
-    };
+    actionOnButton(buttonArray) {
+        buttonArray.forEach((button) => {
+            button.onclick = () => {
+                const input = button.textContent.trim();
+                // console.log(operandA);
+                // console.log(operandB);
+                handleInput(input);
+            };
+        });
+    }
 }
 
+let operandA = null;
+let operandB = null;
+let currentOperator = null;
+let isNegativeAllowed = true;
+
 const output = new Result();
+const buttonClassInstance = new Button();
 
-const elements = leftContainer.concat(symbols).concat(deleteSymbol);
-let a = 0;
-let b = "";
-let c = 0;
-let d = "";
+const numberButtons = buttonClassInstance.addingButton(leftContainer, selectorLeftContainer);
+const symbolButtons = buttonClassInstance.addingButton(symbols, selectorRightContainer);
 
-const numberButtons = new Button().addingButton(leftContainer, selectorLeftContainer)
-const symbolButtons = new Button().addingButton(symbols, selectorRightContainer)
+buttonClassInstance.actionOnButton(numberButtons);
+buttonClassInstance.actionOnButton(symbolButtons);
 
-console.log(typeof numberButtons)
-numberButtons.actionOnButton()
-// const numberButtonss = new Button().actionOnButton(numberButtons)
+function handleInput(input) {
+    if (!isNaN(input)) { // Если входящее значение - число
+        isNegativeAllowed = true; 
+        if (currentOperator === null) { 
+            operandA = (operandA !== null) ? operandA + input : input; // Первый операнд
+            output.setResult(input);
+        } else {
+            operandB = (operandB !== null) ? operandB + input : input; // Второй операнд
+            output.setResult(input);
+        }
+    } 
+    
+    else if (input === "C") {
+        output.reset();
+    } else if (symbols.includes(input)) {
+        if (input === "=") {
+            if (operandA !== null && operandB !== null && currentOperator !== null) {
+                const result = calculateResult(operandA, operandB, currentOperator);
+                output.setResult(`=${result}`);
+                output.result = result.toString(); 
+                operandA = result;
+                operandB = null;
+                currentOperator = null;
+            }
+        } else {
+            if (operandA !== null 
+                && (operandB === null || operandB ==="-") 
+                && currentOperator === null  
+                ) { // Устанавливаем оператор
+                currentOperator = input;
+                output.setResult(input);
+            }
+             if (input === "-" && isNegativeAllowed) {
+                // Обработка минуса для отрицательных чисел
+                if (currentOperator !== null && operandA === null) {
+                    isNegativeAllowed = false; // Минус можно ввести только один раз
+                    if(input === "-" && currentOperator !== "-"){
+                        operandA = "-";
+                        output.setResult(operandA);
+                    }
+                }
+                else{
+                    isNegativeAllowed = false; // Минус можно ввести только один раз
+                    if(input === "-" && currentOperator !== "-"){
+                        operandB = "-";
+                        output.setResult(operandB);
+                    }
+                }
+            }
+        }
+    }
+}
 
-// numberButtons.actionOnButton(numberButtons)
-
-//addingButton(leftContainer)
-//addingButton(symbols)
-console.log(selectorLeftContainer)
-//  actionOnButton(selectorLeftContainer)
-// actionOnButton(symbols)
-
-// function actionOnButton(array){
-//     selectorLeftContainer.onclick.forEach((input) => {
-//         newButton.onclick = () => {
-//             switch (input.toString()) {
-//                 case '*':
-//                     console.log('Умножить');
-//                     a=b
-//                     d = "";
-//                     output.setResult(input)
-//                     console.log(b);
-//                     break;
-    
-//                 case '/':
-//                     console.log('Разделить');
-//                     output.setResult(input)
-//                     break;
-    
-//                 case '-':
-//                     console.log('Вычесть');
-//                     output.setResult(input)
-//                     break;
-                
-    
-//                 case '+':
-//                     console.log('Сложить');
-//                     output.setResult(input)
-//                     break;
-                       
-//                 case '=':
-//                     console.log('Равно');
-//                     output.setResult(input)
-//                     output.setResult(a*d)
-//                     console.log(a);
-//                     console.log(d);
-//                     console.log(Number(a)*Number(d));
-    
-//                     break;
-                
-//                 default:
-//                     console.log(input)
-//                     output.setResult(input)
-//                     if (d==="") {
-//                         d += input.toString()
-//                     }
-//                     b += input.toString()
-//                     break;
-//             }
-//         }
-// })
-// };
-
-// function addingButton(array){
-//     array.forEach((input) => {
-//         const newButton = document.createElement('button');
-//         const span = document.createElement('span');
-//         span.textContent = input.toString();
-//         newButton.append(span);
-//         selectorLeftContainer.append(newButton)
-//     })};
-//         newButton.onclick = () => {
-//             switch (input.toString()) {
-//                 case '*':
-//                     console.log('Умножить');
-//                     a=b
-//                     d = "";
-//                     output.setResult(input)
-//                     console.log(b);
-//                     break;
-    
-//                 case '/':
-//                     console.log('Разделить');
-//                     output.setResult(input)
-//                     break;
-    
-//                 case '-':
-//                     console.log('Вычесть');
-//                     output.setResult(input)
-//                     break;
-                
-    
-//                 case '+':
-//                     console.log('Сложить');
-//                     output.setResult(input)
-//                     break;
-                       
-//                 case '=':
-//                     console.log('Равно');
-//                     output.setResult(input)
-//                     output.setResult(a*d)
-//                     console.log(a);
-//                     console.log(d);
-//                     console.log(Number(a)*Number(d));
-    
-//                     break;
-                
-//                 default:
-//                     console.log(input)
-//                     output.setResult(input)
-//                     if (d==="") {
-//                         d += input.toString()
-//                     }
-//                     b += input.toString()
-//                     break;
-//             }
-//         }
-// })
-// };
+function calculateResult(a, b, operator) {
+    const operand1 = parseFloat(a);
+    const operand2 = parseFloat(b);
+    switch (operator) {
+        case "+":
+            return operand1 + operand2;
+        case "-":
+            return operand1 - operand2;
+        case "*":
+            return operand1 * operand2;
+        case "/":
+            return operand2 !== 0 ? operand1 / operand2 : "Бесконечность";
+        default:
+            return 0;
+    }
+}
